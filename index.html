@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Botswana Agricultural Intelligence System</title>
+<style>
+  :root{
+    --navy:#1F3B57; --green:#2E6B3E; --gold:#B7791F; --light:#EAF0F4;
+    --lightgreen:#E5EFE6; --grey:#F2F4F6; --line:#D9DEE3; --ink:#222; --muted:#6a7682;
+    --red:#B4341F; --amber:#B7791F; --ok:#2E6B3E;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:#f6f7f9;font-size:14px}
+  a{color:var(--navy)}
+  /* layout */
+  .app{display:flex;min-height:100vh}
+  .side{width:230px;background:var(--navy);color:#fff;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+  .brand{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+  .brand b{font-size:15px;display:block;line-height:1.25}
+  .brand span{font-size:11px;color:#aebfce;letter-spacing:.5px}
+  .nav{padding:10px 0;flex:1}
+  .nav button{display:flex;gap:10px;align-items:center;width:100%;background:none;border:0;color:#cdd9e4;padding:11px 18px;font-size:13.5px;cursor:pointer;text-align:left;border-left:3px solid transparent}
+  .nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav button.active{background:rgba(255,255,255,.10);color:#fff;border-left-color:var(--green);font-weight:600}
+  .nav .ico{width:18px;text-align:center}
+  .sidefoot{padding:14px 18px;font-size:11px;color:#90a4b8;border-top:1px solid rgba(255,255,255,.12)}
+  .main{flex:1;min-width:0}
+  .topbar{background:#fff;border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+  .topbar h1{font-size:18px;margin:0;color:var(--navy)}
+  .topbar .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .content{padding:24px 28px 60px;max-width:1100px}
+  /* buttons */
+  .btn{background:var(--green);color:#fff;border:0;border-radius:6px;padding:9px 16px;font-size:13.5px;cursor:pointer;font-weight:600}
+  .btn:hover{filter:brightness(1.07)}
+  .btn.alt{background:var(--navy)}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.gold{background:var(--gold)}
+  .btn.sm{padding:6px 11px;font-size:12.5px}
+  .btn.danger{background:#fff;color:var(--red);border:1px solid #e3c3bd}
+  /* cards */
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(4,1fr)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:16px 18px}
+  .kpi .lab{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .kpi .val{font-size:27px;font-weight:700;color:var(--navy);margin-top:5px;line-height:1}
+  .kpi .note{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .secthead{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+  .secthead h2{font-size:15px;color:var(--navy);margin:0}
+  /* table */
+  table{width:100%;border-collapse:collapse;background:#fff}
+  .tbl{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+  th{background:var(--navy);color:#fff;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--grey);cursor:pointer}
+  .empty{padding:40px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:9px}
+  /* badges */
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+  .b-ok{background:#e3f0e6;color:var(--ok)}
+  .b-amber{background:#f6ecd8;color:var(--amber)}
+  .b-red{background:#f4ddd8;color:var(--red)}
+  .b-grey{background:#e9edf1;color:#566}
+  .src{font-size:10px;padding:1px 6px;border-radius:4px;font-weight:700;letter-spacing:.4px;vertical-align:middle}
+  .src.v{background:#e3f0e6;color:var(--ok)}
+  .src.r{background:#eef1f4;color:#586}
+  .src.e{background:#f6ecd8;color:var(--amber)}
+  /* form */
+  form .row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 18px}
+  .fld{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+  .fld.full{grid-column:1 / -1}
+  label{font-size:12.5px;font-weight:600;color:#3a444d}
+  label .hint{font-weight:400;color:var(--muted);font-size:11px}
+  input,select,textarea{font:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;width:100%}
+  input:focus,select:focus,textarea:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 2px #2e6b3e22}
+  .fieldgroup{border:1px solid var(--line);border-radius:9px;padding:16px 18px;margin-bottom:18px;background:#fff}
+  .fieldgroup>h3{margin:0 0 14px;font-size:13px;color:var(--green);text-transform:uppercase;letter-spacing:.6px}
+  .pill{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .pill button{border:0;background:#fff;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+  .pill button.on{background:var(--green);color:#fff}
+  .formfoot{display:flex;gap:10px;align-items:center;margin-top:6px}
+  /* profile */
+  .profile{background:#fff;border:1px solid var(--line);border-radius:9px;max-width:850px}
+  .pf-head{background:var(--navy);color:#fff;padding:20px 26px;border-radius:9px 9px 0 0;display:flex;justify-content:space-between;align-items:flex-start}
+  .pf-head h2{margin:0;font-size:20px}
+  .pf-head .sub{font-size:12px;color:#aebfce;margin-top:3px}
+  .pf-score{text-align:center;background:rgba(255,255,255,.1);padding:8px 16px;border-radius:8px}
+  .pf-score .n{font-size:30px;font-weight:800;line-height:1}
+  .pf-score .l{font-size:10px;letter-spacing:.6px;color:#cdd9e4}
+  .pf-body{padding:22px 26px}
+  .pf-sect{margin-bottom:20px}
+  .pf-sect h4{margin:0 0 8px;font-size:12px;color:var(--green);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--lightgreen);padding-bottom:5px}
+  .pf-kv{display:grid;grid-template-columns:repeat(2,1fr);gap:7px 24px}
+  .kv{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted #e3e7eb;padding:5px 0;font-size:13px}
+  .kv .k{color:var(--muted)}
+  .kv .val{font-weight:600;text-align:right}
+  .barrow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+  .barrow .blab{width:150px;color:#3a444d}
+  .bartrack{flex:1;height:10px;background:#edf0f3;border-radius:6px;overflow:hidden}
+  .barfill{height:100%;border-radius:6px}
+  .barrow .bnum{width:42px;text-align:right;font-weight:700;font-size:12px}
+  .callout{border-left:4px solid var(--green);background:var(--lightgreen);padding:12px 16px;border-radius:0 6px 6px 0;font-size:13px;margin:14px 0}
+  .callout.gold{border-color:var(--gold);background:#faf3e3}
+  .callout.navy{border-color:var(--navy);background:var(--light)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin:10px 0}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .disclaimer{font-size:11px;color:var(--muted);font-style:italic;margin-top:8px;line-height:1.5}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:13.5px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+  .toast.show{opacity:1}
+  .hide{display:none!important}
+  .muted{color:var(--muted)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .search{max-width:240px}
+  .chip{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--grey);color:#566;border:1px solid var(--line)}
+  /* simple bar chart */
+  .chart .cbar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:12.5px}
+  .chart .cname{width:120px;color:#3a444d}
+  .chart .ctrack{flex:1;height:16px;background:#eef1f4;border-radius:5px;overflow:hidden}
+  .chart .cfill{height:100%;background:var(--green)}
+  .chart .cval{width:36px;text-align:right;font-weight:700}
+  @media print{
+    .side,.topbar,.noprint{display:none!important}
+    .content{padding:0;max-width:none}
+    .profile{border:0;max-width:none}
+    body{background:#fff}
+  }
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}form .row{grid-template-columns:1fr}.pf-kv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <b>Botswana Agricultural<br>Intelligence System</b>
+      <span>FIELD DATA PLATFORM &middot; v1.0</span>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-view="dashboard" class="active"><span class="ico">▭</span> Dashboard</button>
+      <button data-view="register"><span class="ico">＋</span> Register farm</button>
+      <button data-view="registry"><span class="ico">≣</span> Farm registry</button>
+      <button data-view="processor"><span class="ico">▦</span> Processor forecast</button>
+      <button data-view="government"><span class="ico">❖</span> Government view</button>
+      <button data-view="data"><span class="ico">⤓</span> Data &amp; backup</button>
+      <button data-view="about"><span class="ico">ⓘ</span> About &amp; method</button>
+    </nav>
+    <div class="sidefoot">
+      Data is stored locally in this browser. Nothing leaves your computer. Back it up from the Data tab.
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="ttl">Dashboard</h1>
+        <div class="sub" id="tsub">National field intelligence at a glance</div>
+      </div>
+      <div class="toolbar noprint" id="topactions"></div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Botswana Agricultural Intelligence System - MVP engine
+   Single-file, offline, localStorage-backed.
+   All monetary values in Botswana Pula (P).
+   PLANNING ASSUMPTIONS are labelled; nothing model-derived is
+   presented as a verified record.
+   ============================================================ */
+
+const STORE_KEY = "bais_farms_v1";
+
+/* ---------- reference data (planning assumptions) ---------- */
+const REGIONS = ["Central","Chobe (Pandamatenga)","Ghanzi","Kgalagadi","Kgatleng","Kweneng","North East","North West (Ngamiland)","South East","Southern (Barolong)"];
+
+// dryland baseline yield (t/ha) and farmgate price (P/tonne). Judgment, not verified.
+const CROPS = {
+  "Sorghum":     {base:0.45, price:4200},
+  "Maize":       {base:0.50, price:3800},
+  "Millet":      {base:0.35, price:4500},
+  "Cowpeas":     {base:0.40, price:9000},
+  "Sugar beans": {base:0.80, price:14000},
+  "Groundnuts":  {base:0.55, price:11000},
+  "Sunflower":   {base:0.45, price:7000},
+  "Vegetables":  {base:8.00, price:6000}
+};
+// livestock: value per head (P) and annual offtake rate. Judgment.
+const HERDS = {
+  "Cattle (beef)": {value:6500, offtake:0.18},
+  "Goats":         {value:900,  offtake:0.30},
+  "Sheep":         {value:1100, offtake:0.30},
+  "Poultry":       {value:75,   offtake:1.20}
+};
+const WATER = {
+  "Rain-fed":            {reliab:0.35, label:"Rain-fed (dryland)"},
+  "Borehole":            {reliab:0.70, label:"Borehole"},
+  "Irrigation scheme":   {reliab:0.92, label:"Irrigation scheme"},
+  "River / surface":     {reliab:0.80, label:"River / surface"},
+  "Dam":                 {reliab:0.75, label:"Dam"}
+};
+const IRRIG = {"None (dryland)":0.0,"Flood / furrow":0.55,"Sprinkler":0.80,"Drip":1.0,"Centre pivot":0.95};
+const DROUGHT = {"Low":1.0,"Medium":0.75,"High":0.5};
+const CONDITION = {"Healthy / vigorous":1.0,"Mild stress":0.82,"Moderate stress":0.6,"Severe stress":0.35,"Not assessed":0.7};
+
+/* ---------- storage ---------- */
+function load(){ try{return JSON.parse(localStorage.getItem(STORE_KEY))||[]}catch(e){return[]} }
+function save(arr){ localStorage.setItem(STORE_KEY, JSON.stringify(arr)) }
+function uid(){ return "F"+Date.now().toString(36).toUpperCase()+Math.floor(Math.random()*900+100) }
+
+/* ---------- scoring engine (rules-based v1) ---------- */
+function num(v,d=0){ const n=parseFloat(v); return isNaN(n)?d:n }
+
+function completeness(f){
+  // share of core record fields that are filled
+  const core = [f.farmerName,f.nationalId,f.region,f.village,f.plotSize,f.tenure,f.waterSource,f.contact];
+  const ext  = f.type==="crop"
+      ? [f.crop,f.plantingDate,f.irrigation,f.inputsLogged,f.buyer]
+      : [f.herdType,f.herdSize,f.healthProgram,f.buyer,f.brandReg];
+  const all = core.concat(ext);
+  const filled = all.filter(x=>x!==undefined&&x!==""&&x!==null&&x!=="false").length;
+  return Math.round(100*filled/all.length);
+}
+
+function effCondition(f){ return (f.inspection&&f.inspection.condition) ? f.inspection.condition : f.condition; }
+function estYield(f){
+  if(f.type!=="crop") return null;
+  const c = CROPS[f.crop]; if(!c) return null;
+  const area = num(f.plotSize);
+  const w = WATER[f.waterSource]?.reliab ?? 0.4;
+  const irr = IRRIG[f.irrigation] ?? 0;
+  // water factor: dryland leans on rainfall reliability; irrigation lifts toward potential
+  const waterFactor = Math.min(1.6, 0.6 + w*0.6 + irr*0.9);
+  const cond = CONDITION[effCondition(f)] ?? 0.7;
+  const drought = DROUGHT[f.droughtExposure] ?? 0.75;
+  const tPerHa = c.base * waterFactor * cond * (0.7+0.3*drought);
+  const tonnes = tPerHa * area;
+  return { tPerHa:+tPerHa.toFixed(2), tonnes:+tonnes.toFixed(2), revenue:Math.round(tonnes*c.price) };
+}
+
+function estLivestock(f){
+  if(f.type!=="livestock") return null;
+  const h = HERDS[f.herdType]; if(!h) return null;
+  const n = num(f.herdSize);
+  const value = n*h.value;
+  const annualOfftakeHeads = Math.round(n*h.offtake);
+  const annualRevenue = Math.round(annualOfftakeHeads*h.value);
+  return { headcount:n, herdValue:value, annualOfftakeHeads, annualRevenue };
+}
+
+function riskScore(f){
+  // 0-100, higher = lower risk / more bankable
+  let s=0; const parts=[];
+  const w = WATER[f.waterSource]?.reliab ?? 0.4;
+  const wp = Math.round(w*22); s+=wp; parts.push(["Water security",wp,22]);
+  if(f.type==="crop"){
+    const irr = IRRIG[f.irrigation] ?? 0; const ip=Math.round(irr*16); s+=ip; parts.push(["Irrigation capacity",ip,16]);
+    const dr = DROUGHT[f.droughtExposure] ?? 0.75; const dp=Math.round(dr*16); s+=dp; parts.push(["Drought resilience",dp,16]);
+    const cond = CONDITION[effCondition(f)] ?? 0.7; const cp=Math.round(cond*14); s+=cp; parts.push(["Current crop condition",cp,14]);
+  } else {
+    const hp = f.healthProgram==="true"?16:4; s+=hp; parts.push(["Herd health program",hp,16]);
+    const br = f.brandReg==="true"?16:4; s+=br; parts.push(["Branded / traceable",br,16]);
+    const dr = DROUGHT[f.droughtExposure] ?? 0.75; const dp=Math.round(dr*14); s+=dp; parts.push(["Rangeland / drought",dp,14]);
+  }
+  const comp = completeness(f); const cmp=Math.round(comp/100*16); s+=cmp; parts.push(["Record completeness",cmp,16]);
+  const buyerP = (f.buyer&&f.buyer!=="")?14:0; s+=buyerP; parts.push(["Verified market / buyer",buyerP,14]);
+  const histP = f.priorLoan==="repaid"?16:(f.priorLoan==="none"?9:(f.priorLoan==="active"?7:2));
+  s+=histP; parts.push(["Repayment history",histP,16]);
+  s=Math.max(0,Math.min(100,s));
+  return { score:s, parts };
+}
+
+function bankTier(score){
+  if(score>=72) return {tier:"A - Bankable",cls:"b-ok",msg:"Strong verified profile. Ready for finance review."};
+  if(score>=55) return {tier:"B - Conditional",cls:"b-amber",msg:"Financeable with conditions or co-signed inputs."};
+  if(score>=38) return {tier:"C - Developing",cls:"b-amber",msg:"Needs record-building and a confirmed buyer before lending."};
+  return {tier:"D - High risk",cls:"b-red",msg:"Not yet bankable. Priority for advisory and monitoring."};
+}
+
+function repayment(f){
+  const y=estYield(f), l=estLivestock(f);
+  const rev = y? y.revenue : (l? l.annualRevenue : 0);
+  const loan = Math.round(rev*0.5); // illustrative: lend up to ~50% of expected season revenue
+  return { expectedRevenue:rev, indicativeLoan:loan, buyer:f.buyer||"Not confirmed" };
+}
+
+/* ---------- water budget (crop) - planning assumptions ---------- */
+const CROP_WATER = {"Sorghum":450,"Maize":550,"Millet":400,"Cowpeas":350,"Sugar beans":400,"Groundnuts":500,"Sunflower":450,"Vegetables":600}; // seasonal mm
+function waterBudget(f){
+  if(f.type!=="crop"||!CROPS[f.crop]) return null;
+  const need = CROP_WATER[f.crop] || 450;
+  const dr = DROUGHT[f.droughtExposure] ?? 0.75;
+  const effRain = Math.round(400*dr);                 // effective seasonal rainfall assumption
+  const irr = IRRIG[f.irrigation] ?? 0;
+  const area = num(f.plotSize);
+  const gapMm = Math.max(0, need-effRain);
+  const cover = Math.min(1, irr*(WATER[f.waterSource]?.reliab ?? 0.4)); // share of gap irrigation can cover
+  const residualMm = Math.max(0, gapMm*(1-cover));
+  const gapM3ha = Math.round(residualMm*10);
+  const totalM3 = Math.round(gapM3ha*area);
+  let status,cls;
+  if(residualMm<=20){status="Adequate";cls="b-ok";}
+  else if(residualMm<=120){status="Tight";cls="b-amber";}
+  else{status="Deficit";cls="b-red";}
+  return {need,effRain,irrCover:Math.round(cover*100),residualMm:Math.round(residualMm),gapM3ha,totalM3,status,cls,area};
+}
+
+/* ---------- advisory engine (rules-based) ---------- */
+function advisories(f){
+  const out=[]; const y=estYield(f),lv=estLivestock(f);
+  const rev = y? y.revenue : (lv? lv.annualRevenue : 0);
+  const rp=repayment(f); const comp=completeness(f);
+  const add=(lens,prio,finding,action,cost,loss)=>out.push({lens,prio,finding,action,cost,loss});
+
+  if(!f.buyer) add("Market","High","No confirmed buyer, so there is no verified repayment source.","Secure an offtake agreement before the season: BAMB for grain, BMC for cattle, or a contract buyer.",0,rp.indicativeLoan);
+  if(comp<60) add("Data","High","Record is only "+comp+"% complete, which caps the bankability score.","Capture the missing fields: GPS boundary, inputs applied, tenure, and contact.",0,rp.indicativeLoan);
+
+  if(f.type==="crop"){
+    const wb=waterBudget(f);
+    if(wb&&wb.status==="Deficit") add("Water","High","Water deficit: crop needs ~"+wb.need+"mm, effective supply ~"+wb.effRain+"mm, residual gap ~"+wb.residualMm+"mm.","Add supplemental irrigation (~"+wb.gapM3ha+" m3/ha) or switch to a drought-tolerant variety.",Math.round(wb.totalM3*8),Math.round(rev*0.5));
+    else if(wb&&wb.status==="Tight") add("Water","Medium","Water is tight: residual gap ~"+wb.residualMm+"mm after rainfall and irrigation.","Conserve moisture: mulching, planting basins, and early weeding.",1500,Math.round(rev*0.25));
+    if(f.pumpStatus==="Broken") add("Water","High","Irrigation pump is broken.","Repair or replace the pump before peak water demand.",5000,Math.round(rev*0.6));
+    if(f.condition&&f.condition.indexOf("Severe")>-1) add("Agronomy","High","Severe crop stress reported in the field.","Scout immediately for pest, disease, or nutrient cause and treat within days.",1200,Math.round(rev*0.6));
+    else if(f.condition&&f.condition.indexOf("Moderate")>-1) add("Agronomy","Medium","Moderate crop stress reported.","Scout and correct the limiting factor within 7 days.",800,Math.round(rev*0.35));
+    if(!f.inputsLogged||/retained|no fert/i.test(f.inputsLogged)) add("Agronomy","Medium","Little or no improved inputs recorded.","Apply basal and top-dressing fertiliser with certified seed to lift yield.",1800,Math.round(rev*0.3));
+    if(f.waterSource==="Rain-fed"&&f.droughtExposure==="High") add("Water","Medium","Rain-fed plot under high drought exposure.","Plan a borehole or water-harvesting buffer for next season.",0,Math.round(rev*0.4));
+  } else if(f.type==="livestock"){
+    if(f.healthProgram!=="true") add("Livestock","High","No active health or vaccination program.","Start a vaccination and dosing schedule to cut mortality and rejections.",Math.round(num(f.herdSize)*45),Math.round((lv?lv.herdValue:0)*0.08));
+    if(f.brandReg!=="true") add("Market","Medium","Herd is not branded or traceable.","Register a brand to unlock BMC and formal market access.",500,Math.round(rev*0.2));
+    if(f.pumpStatus==="Broken") add("Water","High","Stock water supply is compromised (broken pump).","Restore the borehole or pump and arrange interim water carting.",5000,Math.round((lv?lv.herdValue:0)*0.1));
+    if(f.droughtExposure==="High") add("Livestock","Medium","High rangeland drought stress.","Plan supplementary feed and consider strategic destocking before condition drops.",Math.round(num(f.herdSize)*120),Math.round((lv?lv.herdValue:0)*0.12));
+  }
+  if(f.priorLoan==="default") add("Finance","Medium","Prior loan default on file.","Rebuild credit with a small, fully-recorded input loan repaid on time.",0,0);
+
+  const order={High:0,Medium:1,Low:2};
+  out.sort((a,b)=>order[a.prio]-order[b.prio]);
+  return out;
+}
+
+/* ---------- insurer evidence engine ---------- */
+const PERILS=["Drought","Flood","Pest infestation","Disease","Hail","Veld fire"];
+const SEVERITY={"Minor":0.25,"Moderate":0.5,"Severe":0.8,"Total":1.0};
+function insurerAssessment(f){
+  const ev=f.lossEvent; if(!ev||!ev.peril||!ev.severity) return null;
+  const y=estYield(f), lv=estLivestock(f);
+  const expected = y? y.revenue : (lv? lv.annualRevenue : 0);
+  const areaPct = Math.min(100, Math.max(0, num(ev.areaAffectedPct,50)));
+  const sev = SEVERITY[ev.severity] ?? 0.5;
+  const grossLoss = Math.round(expected*(areaPct/100)*sev);
+
+  let mgmt=0; const flags=[];
+  if(f.type==="crop"){
+    if(!f.inputsLogged||/retained|no fert/i.test(f.inputsLogged)){ mgmt+=0.20; flags.push(["Inputs","No improved inputs recorded - part of the shortfall is management, not peril."]); }
+    if(f.pumpStatus==="Broken"&&ev.peril!=="Flood"){ mgmt+=0.20; flags.push(["Water","Irrigation pump broken - avoidable water stress overlaps the claim."]); }
+    if(ev.peril==="Drought"&&f.waterSource!=="Rain-fed"&&f.irrigation&&f.irrigation!=="None (dryland)"){ mgmt+=0.10; flags.push(["Consistency","Irrigated farm claiming drought - confirm the water source actually failed."]); }
+  } else {
+    if(f.healthProgram!=="true"&&ev.peril==="Disease"){ mgmt+=0.35; flags.push(["Herd health","No vaccination program - disease loss is substantially preventable."]); }
+    if(f.droughtExposure==="High"&&ev.peril==="Drought"&&f.pumpStatus==="Broken"){ mgmt+=0.20; flags.push(["Water","Broken stock-water supply worsened the drought impact."]); }
+  }
+  if(ev.conditionAtLoss==="Healthy / vigorous"&&areaPct>50){ flags.push(["Inconsistency","Condition logged as healthy but large loss claimed - reconcile before payout."]); }
+  if(f.droughtExposure==="Low"&&ev.peril==="Drought"){ flags.push(["Exposure","Plot rated low drought exposure - a drought claim here is unusual."]); }
+  if(f.priorLoan==="default"){ flags.push(["History","Prior default on file - apply standard fraud diligence."]); }
+
+  const comp=completeness(f);
+  const drone=!!(f.inspection&&f.inspection.condition);
+  if(drone) flags.push(["Drone","Drone inspection on file ("+(f.inspection.date||"date n/a")+") - field condition independently verified."]);
+  const evidenceWeak = drone ? false : (comp<60 || !f.gps);
+  mgmt=Math.min(0.7,mgmt);
+  const perilLoss=Math.round(grossLoss*(1-mgmt));
+  const mgmtLoss=grossLoss-perilLoss;
+
+  const inconsistent = (f.droughtExposure==="Low"&&ev.peril==="Drought");
+  let verdict,vcls;
+  if(inconsistent){ verdict="Inconsistent with record"; vcls="b-red"; }
+  else if(mgmt>=0.35){ verdict="Partly management"; vcls="b-amber"; }
+  else { verdict="Consistent with peril"; vcls="b-ok"; }
+
+  let rec,rcls;
+  if(inconsistent){ rec="Investigate - likely decline"; rcls="b-red"; }
+  else if(evidenceWeak){ rec="Field-verify before payout"; rcls="b-amber"; }
+  else if(mgmt>=0.5){ rec="Partial payout - peril share only"; rcls="b-amber"; }
+  else { rec="Support claim"; rcls="b-ok"; }
+
+  const confidence = drone ? "High - drone-verified" : (evidenceWeak ? "Low - thin record" : ((f.condition&&f.condition!=="Not assessed") ? "Medium - field-observed" : "Medium"));
+  return {ev,expected,areaPct,sev,grossLoss,mgmtPct:Math.round(mgmt*100),perilLoss,mgmtLoss,verdict,vcls,rec,rcls,flags,confidence,evidenceWeak,comp,drone};
+}
+
+/* ---------- helpers ---------- */
+const $ = s=>document.querySelector(s);
+function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstChild }
+function P(n){ return "P "+Math.round(n).toLocaleString("en-US") }
+function esc(s){ return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])) }
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1900) }
+function srcTag(kind){ const m={v:["VERIFIED","v"],r:["REPORTED","r"],e:["ESTIMATED","e"]}; const x=m[kind]; return `<span class="src ${x[1]}">${x[0]}</span>` }
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+let state = { view:"dashboard", current:null, filter:"" };
+
+function setView(v){
+  state.view=v;
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));
+  render();
+}
+
+function render(){
+  const c=$("#content"); const farms=load();
+  const titles={dashboard:["Dashboard","National field intelligence at a glance"],
+    register:["Register farm","Capture one structured record per farm"],
+    registry:["Farm registry","Every farm captured, with live risk scoring"],
+    data:["Data & backup","Your data asset - export, import, own it"],
+    about:["About & method","What the engine does and how to read it"],
+    profile:["Bankable farmer profile","Lender-ready output generated from the record"],
+    advisory:["Farmer action advisory","Prioritised, costed actions for the farm gate"],
+    insurer:["Insurer evidence pack","Independent loss assessment between farmer and insurer"],
+    processor:["Processor supply forecast","Clustered volume, timing, and reliability for offtakers"],
+    government:["Government district view","Measure the sector, not just fund it"],
+    inspection:["Drone inspection report","Field-verified evidence that upgrades the record"]};
+  $("#ttl").textContent=titles[state.view][0]; $("#tsub").textContent=titles[state.view][1];
+  $("#topactions").innerHTML="";
+  if(state.view==="dashboard") renderDashboard(c,farms);
+  else if(state.view==="register") renderForm(c);
+  else if(state.view==="registry") renderRegistry(c,farms);
+  else if(state.view==="data") renderData(c,farms);
+  else if(state.view==="about") renderAbout(c);
+  else if(state.view==="profile") renderProfile(c,farms);
+  else if(state.view==="advisory") renderAdvisory(c,farms);
+  else if(state.view==="insurer") renderInsurer(c,farms);
+  else if(state.view==="processor") renderProcessor(c,farms);
+  else if(state.view==="government") renderGovernment(c,farms);
+  else if(state.view==="inspection") renderInspection(c,farms);
+}
+
+/* ---------- dashboard ---------- */
+function renderDashboard(c,farms){
+  $("#topactions").appendChild(el(`<button class="btn" onclick="setView('register')">＋ Register farm</button>`));
+  if(!farms.length){
+    c.innerHTML="";
+    c.appendChild(el(`<div class="empty"><h3 style="margin:0 0 8px;color:var(--navy)">No farms captured yet</h3>
+      <p class="muted" style="margin:0 0 16px">The system has nothing to measure until you register a farm. Start with one, or load sample data to see it work.</p>
+      <button class="btn" onclick="setView('register')">Register first farm</button>
+      <button class="btn ghost" style="margin-left:8px" onclick="loadSamples()">Load sample data</button></div>`));
+    return;
+  }
+  const n=farms.length;
+  const ha=farms.filter(f=>f.type==="crop").reduce((a,f)=>a+num(f.plotSize),0);
+  const heads=farms.filter(f=>f.type==="livestock").reduce((a,f)=>a+num(f.herdSize),0);
+  const scores=farms.map(f=>riskScore(f).score);
+  const avg=Math.round(scores.reduce((a,b)=>a+b,0)/n);
+  const bankable=farms.filter(f=>riskScore(f).score>=72).length;
+  const portRev=farms.reduce((a,f)=>a+repayment(f).expectedRevenue,0);
+  const portLoan=farms.reduce((a,f)=>a+repayment(f).indicativeLoan,0);
+  c.innerHTML="";
+  c.appendChild(el(`<div class="grid kpis">
+    <div class="card kpi"><div class="lab">Farms registered</div><div class="val">${n}</div><div class="note">${ha.toFixed(0)} ha cropland &middot; ${heads.toLocaleString()} animals</div></div>
+    <div class="card kpi"><div class="lab">Avg risk score</div><div class="val">${avg}<span style="font-size:14px;color:var(--muted)">/100</span></div><div class="note">${bankable} farm(s) tier A bankable</div></div>
+    <div class="card kpi"><div class="lab">Forecast season revenue</div><div class="val" style="font-size:22px">${P(portRev)}</div><div class="note">Across portfolio (estimated)</div></div>
+    <div class="card kpi"><div class="lab">Indicative lendable</div><div class="val" style="font-size:22px">${P(portLoan)}</div><div class="note">~50% of forecast revenue</div></div>
+  </div>`));
+
+  // watchlist
+  const ranked=[...farms].sort((a,b)=>riskScore(a).score-riskScore(b).score);
+  const watch=ranked.slice(0,5);
+  c.appendChild(el(`<div class="secthead"><h2>Priority watchlist - highest risk first</h2><button class="btn ghost sm" onclick="setView('registry')">View all</button></div>`));
+  const wt=el(`<div class="tbl"><table><thead><tr><th>Farm</th><th>Region</th><th>Type</th><th>Risk</th><th>Tier</th><th>Issue flag</th></tr></thead><tbody></tbody></table></div>`);
+  watch.forEach(f=>{ const r=riskScore(f); const t=bankTier(r.score);
+    wt.querySelector("tbody").appendChild(el(`<tr onclick="openProfile('${f.id}')">
+      <td><b>${esc(f.farmerName)}</b><br><span class="muted" style="font-size:11px">${f.id}</span></td>
+      <td>${esc(f.region)}</td><td>${f.type==="crop"?esc(f.crop||"Crop"):esc(f.herdType||"Livestock")}</td>
+      <td><span class="badge ${t.cls}">${r.score}</span></td><td>${t.tier}</td>
+      <td style="font-size:12px">${esc(flagFor(f))}</td></tr>`)); });
+  c.appendChild(wt);
+
+  // breakdowns
+  c.appendChild(el(`<div class="secthead"><h2>Portfolio breakdown</h2></div>`));
+  const half=el(`<div class="grid" style="grid-template-columns:1fr 1fr"></div>`);
+  half.appendChild(barCard("By region", countBy(farms,f=>f.region)));
+  half.appendChild(barCard("By water source", countBy(farms,f=>f.waterSource)));
+  c.appendChild(half);
+}
+function flagFor(f){
+  const r=riskScore(f);
+  if(f.waterSource==="Rain-fed"&&(!f.irrigation||f.irrigation==="None (dryland)")) return "Rain-fed, no irrigation buffer";
+  if(completeness(f)<55) return "Thin record - needs data";
+  if(!f.buyer) return "No confirmed buyer";
+  if(f.condition&&f.condition.includes("stress")) return "Crop stress reported";
+  if(f.priorLoan==="default") return "Prior default on file";
+  return r.score>=72?"Healthy":"Monitor";
+}
+function countBy(arr,fn){ const m={}; arr.forEach(x=>{const k=fn(x)||"-"; m[k]=(m[k]||0)+1}); return m }
+function barCard(title,map){
+  const max=Math.max(1,...Object.values(map));
+  const rows=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+    `<div class="cbar"><div class="cname" title="${esc(k)}">${esc(k)}</div><div class="ctrack"><div class="cfill" style="width:${100*v/max}%"></div></div><div class="cval">${v}</div></div>`).join("");
+  return el(`<div class="card chart"><h2 style="font-size:13px;color:var(--navy);margin:0 0 12px">${title}</h2>${rows||'<span class="muted">No data</span>'}</div>`);
+}
+
+/* ---------- registration form ---------- */
+let formType="crop";
+function renderForm(c,editId){
+  const editing = editId ? load().find(f=>f.id===editId) : null;
+  if(editing) formType=editing.type;
+  const g=v=>editing?esc(editing[v]??""):"";
+  const sel=(v,val)=>editing&&editing[v]===val?"selected":"";
+  c.innerHTML="";
+  const f=el(`<form id="farmForm" autocomplete="off"></form>`);
+
+  f.appendChild(el(`<div class="fieldgroup">
+    <h3>Record type</h3>
+    <div class="pill" id="typePill">
+      <button type="button" data-t="crop" class="${formType==='crop'?'on':''}">Crop / arable</button>
+      <button type="button" data-t="livestock" class="${formType==='livestock'?'on':''}">Livestock</button>
+    </div>
+    <div class="legend" style="margin-top:12px">
+      <span>${srcTag('r')} farmer-stated</span><span>${srcTag('v')} measured / confirmed</span><span>${srcTag('e')} model-estimated</span>
+    </div>
+  </div>`));
+
+  // identity + land
+  f.appendChild(el(`<div class="fieldgroup"><h3>Farmer &amp; land ${srcTag('r')}</h3>
+    <div class="row">
+      <div class="fld"><label>Farmer name</label><input name="farmerName" required value="${g('farmerName')}"></div>
+      <div class="fld"><label>Omang / National ID <span class="hint">optional</span></label><input name="nationalId" value="${g('nationalId')}"></div>
+      <div class="fld"><label>Contact (phone)</label><input name="contact" value="${g('contact')}"></div>
+      <div class="fld"><label>District / region</label><select name="region" required><option value="">Select...</option>${REGIONS.map(r=>`<option ${sel('region',r)}>${r}</option>`).join("")}</select></div>
+      <div class="fld"><label>Village / locality</label><input name="village" value="${g('village')}"></div>
+      <div class="fld"><label>Plot size (hectares)</label><input name="plotSize" type="number" step="0.1" min="0" value="${g('plotSize')}"></div>
+      <div class="fld"><label>Land tenure</label><select name="tenure"><option value="">Select...</option>${["Tribal / customary","Leasehold","Freehold","Communal grazing"].map(t=>`<option ${sel('tenure',t)}>${t}</option>`).join("")}</select></div>
+      <div class="fld"><label>GPS / plot boundary <span class="hint">e.g. -18.52, 25.65</span></label><input name="gps" value="${g('gps')}"></div>
+    </div></div>`));
+
+  // water
+  f.appendChild(el(`<div class="fieldgroup"><h3>Water ${srcTag('r')}</h3>
+    <div class="row">
+      <div class="fld"><label>Primary water source</label><select name="waterSource" required><option value="">Select...</option>${Object.keys(WATER).map(w=>`<option ${sel('waterSource',w)}>${w}</option>`).join("")}</select></div>
+      <div class="fld"><label>Pump / equipment status</label><select name="pumpStatus"><option value="">Select...</option>${["Working","Intermittent","Broken","None"].map(t=>`<option ${sel('pumpStatus',t)}>${t}</option>`).join("")}</select></div>
+    </div></div>`));
+
+  // crop block
+  f.appendChild(el(`<div class="fieldgroup cropOnly"><h3>Crop &amp; production ${srcTag('r')}</h3>
+    <div class="row">
+      <div class="fld"><label>Primary crop</label><select name="crop"><option value="">Select...</option>${Object.keys(CROPS).map(k=>`<option ${sel('crop',k)}>${k}</option>`).join("")}</select></div>
+      <div class="fld"><label>Variety <span class="hint">optional</span></label><input name="variety" value="${g('variety')}"></div>
+      <div class="fld"><label>Planting date</label><input name="plantingDate" type="date" value="${g('plantingDate')}"></div>
+      <div class="fld"><label>Irrigation method</label><select name="irrigation"><option value="">Select...</option>${Object.keys(IRRIG).map(k=>`<option ${sel('irrigation',k)}>${k}</option>`).join("")}</select></div>
+      <div class="fld"><label>Drought exposure</label><select name="droughtExposure"><option value="">Select...</option>${Object.keys(DROUGHT).map(k=>`<option ${sel('droughtExposure',k)}>${k}</option>`).join("")}</select></div>
+      <div class="fld"><label>Crop condition ${srcTag('v')} <span class="hint">field/agronomist obs</span></label><select name="condition"><option value="">Select...</option>${Object.keys(CONDITION).map(k=>`<option ${sel('condition',k)}>${k}</option>`).join("")}</select></div>
+      <div class="fld full"><label>Inputs applied this season <span class="hint">seed, fertiliser, herbicide, tillage</span></label><input name="inputsLogged" value="${g('inputsLogged')}"></div>
+    </div></div>`));
+
+  // livestock block
+  f.appendChild(el(`<div class="fieldgroup liveOnly"><h3>Herd &amp; production ${srcTag('r')}</h3>
+    <div class="row">
+      <div class="fld"><label>Livestock type</label><select name="herdType"><option value="">Select...</option>${Object.keys(HERDS).map(k=>`<option ${sel('herdType',k)}>${k}</option>`).join("")}</select></div>
+      <div class="fld"><label>Herd size (head)</label><input name="herdSize" type="number" min="0" value="${g('herdSize')}"></div>
+      <div class="fld"><label>Drought / rangeland stress</label><select name="droughtExposure"><option value="">Select...</option>${Object.keys(DROUGHT).map(k=>`<option ${sel('droughtExposure',k)}>${k}</option>`).join("")}</select></div>
+      <div class="fld"><label>Health / vaccination program</label><select name="healthProgram"><option value="">Select...</option><option value="true" ${sel('healthProgram','true')}>Yes - active</option><option value="false" ${sel('healthProgram','false')}>No</option></select></div>
+      <div class="fld"><label>Branded / traceable ${srcTag('v')}</label><select name="brandReg"><option value="">Select...</option><option value="true" ${sel('brandReg','true')}>Yes - registered brand</option><option value="false" ${sel('brandReg','false')}>No</option></select></div>
+    </div></div>`));
+
+  // market + finance
+  f.appendChild(el(`<div class="fieldgroup"><h3>Market &amp; finance ${srcTag('r')}</h3>
+    <div class="row">
+      <div class="fld"><label>Confirmed buyer / market <span class="hint">repayment source</span></label><select name="buyer"><option value="">None confirmed</option>${["BAMB","Botswana Meat Commission","Local processor","Open market","Cooperative","Contract buyer"].map(b=>`<option ${sel('buyer',b)}>${b}</option>`).join("")}</select></div>
+      <div class="fld"><label>Prior loan history</label><select name="priorLoan"><option value="">Select...</option><option value="none" ${sel('priorLoan','none')}>No prior loan</option><option value="repaid" ${sel('priorLoan','repaid')}>Prior loan repaid</option><option value="active" ${sel('priorLoan','active')}>Active loan, current</option><option value="default" ${sel('priorLoan','default')}>Prior default</option></select></div>
+      <div class="fld full"><label>Notes <span class="hint">anything a lender or agronomist should know</span></label><textarea name="notes" rows="2">${g('notes')}</textarea></div>
+    </div></div>`));
+
+  f.appendChild(el(`<div class="formfoot">
+    <button class="btn" type="submit">${editing?"Save changes":"Capture farm &amp; score"}</button>
+    <button class="btn ghost" type="button" onclick="setView('registry')">Cancel</button>
+    <span class="muted" style="font-size:12px">Saved locally and scored instantly.</span>
+  </div>`));
+
+  c.appendChild(f);
+  // type toggle
+  function applyType(){
+    f.querySelectorAll(".cropOnly").forEach(e=>e.classList.toggle("hide",formType!=="crop"));
+    f.querySelectorAll(".liveOnly").forEach(e=>e.classList.toggle("hide",formType!=="livestock"));
+    f.querySelectorAll("#typePill button").forEach(b=>b.classList.toggle("on",b.dataset.t===formType));
+  }
+  f.querySelectorAll("#typePill button").forEach(b=>b.onclick=()=>{formType=b.dataset.t;applyType()});
+  applyType();
+  f.onsubmit=e=>{ e.preventDefault();
+    const data=Object.fromEntries(new FormData(f).entries());
+    data.type=formType;
+    const arr=load();
+    if(editing){ Object.assign(editing,data); save(arr); toast("Farm updated"); openProfile(editing.id); }
+    else { data.id=uid(); data.created=new Date().toISOString(); arr.push(data); save(arr); toast("Farm captured and scored"); openProfile(data.id); }
+  };
+}
+
+/* ---------- registry ---------- */
+function renderRegistry(c,farms){
+  $("#topactions").appendChild(el(`<input class="search" id="srch" placeholder="Search name, region, ID..." value="${esc(state.filter)}">`));
+  $("#topactions").appendChild(el(`<button class="btn sm" onclick="setView('register')">＋ Register</button>`));
+  $("#srch").oninput=e=>{state.filter=e.target.value;renderRegistry($("#content"),load());};
+  const q=state.filter.toLowerCase();
+  const list=farms.filter(f=>!q||[f.farmerName,f.region,f.id,f.crop,f.herdType,f.village].some(x=>(x||"").toLowerCase().includes(q)));
+  c.innerHTML="";
+  if(!farms.length){ c.appendChild(el(`<div class="empty"><p class="muted">No farms yet.</p><button class="btn" onclick="setView('register')">Register first farm</button> <button class="btn ghost" onclick="loadSamples()">Load sample data</button></div>`)); return; }
+  c.appendChild(el(`<div class="muted" style="margin-bottom:10px;font-size:12.5px">${list.length} of ${farms.length} farms</div>`));
+  const t=el(`<div class="tbl"><table><thead><tr><th>Farmer</th><th>Region</th><th>Enterprise</th><th>Water</th><th>Forecast rev.</th><th>Risk</th><th>Tier</th></tr></thead><tbody></tbody></table></div>`);
+  list.sort((a,b)=>riskScore(b).score-riskScore(a).score).forEach(f=>{
+    const r=riskScore(f),tr=bankTier(r.score),rp=repayment(f);
+    t.querySelector("tbody").appendChild(el(`<tr onclick="openProfile('${f.id}')">
+      <td><b>${esc(f.farmerName)}</b><br><span class="muted" style="font-size:11px">${f.id}${f.village?" &middot; "+esc(f.village):""}</span></td>
+      <td>${esc(f.region)}</td>
+      <td>${f.type==="crop"?esc(f.crop||"Crop")+" &middot; "+(num(f.plotSize)||"?")+" ha":esc(f.herdType||"Livestock")+" &middot; "+(num(f.herdSize)||"?")+" hd"}</td>
+      <td>${esc((WATER[f.waterSource]?.label)||f.waterSource||"-")}</td>
+      <td>${P(rp.expectedRevenue)}</td>
+      <td><span class="badge ${tr.cls}">${r.score}</span></td>
+      <td style="font-size:12px">${tr.tier}</td></tr>`));
+  });
+  c.appendChild(t);
+}
+
+/* ---------- bankable profile ---------- */
+function openProfile(id){ state.current=id; setView("profile"); window.scrollTo(0,0); }
+function renderProfile(c,farms){
+  const f=farms.find(x=>x.id===state.current);
+  if(!f){ c.innerHTML=`<div class="empty">Farm not found.</div>`; return; }
+  const r=riskScore(f), tier=bankTier(r.score), rp=repayment(f);
+  const y=estYield(f), lv=estLivestock(f), comp=completeness(f);
+  $("#topactions").appendChild(el(`<button class="btn ghost sm" onclick="setView('registry')">← Registry</button>`));
+  $("#topactions").appendChild(el(`<button class="btn sm" onclick="window.print()">⎙ Print / PDF</button>`));
+  $("#topactions").appendChild(el(`<button class="btn gold sm" onclick="openAdvisory('${f.id}')">⚑ Action advisory</button>`));
+  $("#topactions").appendChild(el(`<button class="btn alt sm" onclick="openInsurer('${f.id}')">⛨ Insurer pack</button>`));
+  $("#topactions").appendChild(el(`<button class="btn ghost sm" onclick="openInspection('${f.id}')">🛩 Drone inspection</button>`));
+  $("#topactions").appendChild(el(`<button class="btn ghost sm" onclick="editFarm('${f.id}')">Edit</button>`));
+
+  const barColor=s=>s>=72?"var(--ok)":s>=55?"var(--gold)":"var(--red)";
+  const scoreBars=r.parts.map(([lab,v,mx])=>`
+    <div class="barrow"><div class="blab">${lab}</div>
+    <div class="bartrack"><div class="barfill" style="width:${100*v/mx}%;background:${barColor(100*v/mx)}"></div></div>
+    <div class="bnum">${v}/${mx}</div></div>`).join("");
+
+  const prodSect = f.type==="crop" && y ? `
+    <div class="pf-sect"><h4>Production forecast ${srcTag('e')}</h4>
+      <div class="pf-kv">
+        <div class="kv"><span class="k">Crop</span><span class="val">${esc(f.crop||"-")}</span></div>
+        <div class="kv"><span class="k">Plot size</span><span class="val">${num(f.plotSize)} ha</span></div>
+        <div class="kv"><span class="k">Est. yield</span><span class="val">${y.tPerHa} t/ha</span></div>
+        <div class="kv"><span class="k">Est. harvest</span><span class="val">${y.tonnes} t</span></div>
+        <div class="kv"><span class="k">Irrigation</span><span class="val">${esc(f.irrigation||"None")}</span></div>
+        <div class="kv"><span class="k">Forecast revenue</span><span class="val">${P(y.revenue)}</span></div>
+      </div></div>`
+    : f.type==="livestock" && lv ? `
+    <div class="pf-sect"><h4>Herd valuation ${srcTag('e')}</h4>
+      <div class="pf-kv">
+        <div class="kv"><span class="k">Livestock</span><span class="val">${esc(f.herdType||"-")}</span></div>
+        <div class="kv"><span class="k">Headcount</span><span class="val">${lv.headcount.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">Herd value</span><span class="val">${P(lv.herdValue)}</span></div>
+        <div class="kv"><span class="k">Annual offtake</span><span class="val">${lv.annualOfftakeHeads} head</span></div>
+        <div class="kv"><span class="k">Annual revenue</span><span class="val">${P(lv.annualRevenue)}</span></div>
+        <div class="kv"><span class="k">Health program</span><span class="val">${f.healthProgram==="true"?"Active":"None"}</span></div>
+      </div></div>` : "";
+
+  c.innerHTML="";
+  c.appendChild(el(`<div class="profile">
+    <div class="pf-head">
+      <div><h2>${esc(f.farmerName)}</h2>
+        <div class="sub">${f.id} &middot; ${esc(f.region)}${f.village?" &middot; "+esc(f.village):""} &middot; ${f.type==="crop"?"Arable":"Livestock"}</div>
+        <div class="sub">Generated ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})} &middot; Bankable Farmer Profile</div>
+      </div>
+      <div class="pf-score"><div class="n">${r.score}</div><div class="l">RISK SCORE /100</div></div>
+    </div>
+    <div class="pf-body">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+        <span class="badge ${tier.cls}" style="font-size:13px;padding:5px 12px">${tier.tier}</span>
+        <span class="muted">${tier.msg}</span>
+      </div>
+
+      <div class="callout ${r.score>=72?'':'gold'}">
+        <b>Indicative finance:</b> up to <b>${P(rp.indicativeLoan)}</b> against a forecast season revenue of ${P(rp.expectedRevenue)} (~50%).
+        Repayment source: <b>${esc(rp.buyer)}</b>. ${rp.buyer==="Not confirmed"?"Confirm a buyer to strengthen this profile.":""}
+      </div>
+
+      <div class="pf-sect"><h4>Risk score breakdown</h4>${scoreBars}
+        <div class="disclaimer">Score is a transparent weighted model of the captured record. Each bar shows points earned out of the maximum for that factor.</div>
+      </div>
+
+      ${prodSect}
+
+      <div class="pf-sect"><h4>Farm record ${srcTag('r')}</h4>
+        <div class="pf-kv">
+          <div class="kv"><span class="k">Water source</span><span class="val">${esc((WATER[f.waterSource]?.label)||f.waterSource||"-")}</span></div>
+          <div class="kv"><span class="k">Land tenure</span><span class="val">${esc(f.tenure||"-")}</span></div>
+          <div class="kv"><span class="k">Drought exposure</span><span class="val">${esc(f.droughtExposure||"-")}</span></div>
+          <div class="kv"><span class="k">Confirmed buyer</span><span class="val">${esc(f.buyer||"None")}</span></div>
+          <div class="kv"><span class="k">Prior loan</span><span class="val">${esc({none:"None",repaid:"Repaid",active:"Active, current",default:"Default on file"}[f.priorLoan]||"-")}</span></div>
+          <div class="kv"><span class="k">Record completeness</span><span class="val">${comp}%</span></div>
+          <div class="kv"><span class="k">Contact</span><span class="val">${esc(f.contact||"-")}</span></div>
+          <div class="kv"><span class="k">GPS</span><span class="val">${esc(f.gps||"Not captured")}</span></div>
+        </div>
+        ${f.notes?`<div style="margin-top:10px;font-size:12.5px"><b>Notes:</b> ${esc(f.notes)}</div>`:""}
+      </div>
+
+      <div class="legend">
+        <span>${srcTag('v')} measured / confirmed</span>
+        <span>${srcTag('r')} farmer-stated, unconfirmed</span>
+        <span>${srcTag('e')} model-estimated</span>
+      </div>
+      <div class="disclaimer">
+        Botswana Agricultural Intelligence System &middot; Prototype output. Production and revenue figures are model estimates from farmer-stated inputs, not measured results, and use planning-assumption yields and prices in Pula.
+        Satellite and drone verification are not connected in this prototype. This profile supports a lending decision; it does not constitute a credit guarantee or financial advice.
+      </div>
+    </div>
+  </div>`));
+}
+function editFarm(id){ renderFormShell(id); }
+function renderFormShell(id){ state.view="register"; document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view==="register")); $("#ttl").textContent="Edit farm"; $("#tsub").textContent="Update the record and re-score"; $("#topactions").innerHTML=""; renderForm($("#content"),id); }
+
+/* ---------- farmer action advisory ---------- */
+function openAdvisory(id){ state.current=id; setView("advisory"); window.scrollTo(0,0); }
+function renderAdvisory(c,farms){
+  const f=farms.find(x=>x.id===state.current);
+  if(!f){ c.innerHTML=`<div class="empty">Farm not found.</div>`; return; }
+  const adv=advisories(f), wb=waterBudget(f);
+  const totLoss=adv.reduce((a,x)=>a+(x.loss||0),0);
+  const totCost=adv.reduce((a,x)=>a+(x.cost||0),0);
+  const highN=adv.filter(a=>a.prio==="High").length;
+  $("#topactions").appendChild(el(`<button class="btn ghost sm" onclick="openProfile('${f.id}')">&larr; Profile</button>`));
+  $("#topactions").appendChild(el(`<button class="btn sm" onclick="window.print()">&#9113; Print / PDF</button>`));
+  const prioCls={High:"b-red",Medium:"b-amber",Low:"b-grey"};
+  const urgentMsg = highN ? ("<b>"+highN+"</b> need attention now.") : "Nothing urgent outstanding.";
+
+  const wbBox = wb ? `
+    <div class="pf-sect"><h4>Water budget ${srcTag('e')}</h4>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+        <span class="badge ${wb.cls}" style="padding:5px 12px;font-size:13px">${wb.status}</span>
+        <span class="muted">Farm the water first. Every litre must justify itself.</span>
+      </div>
+      <div class="pf-kv">
+        <div class="kv"><span class="k">Seasonal crop need</span><span class="val">${wb.need} mm</span></div>
+        <div class="kv"><span class="k">Effective rainfall (assumed)</span><span class="val">${wb.effRain} mm</span></div>
+        <div class="kv"><span class="k">Irrigation covers</span><span class="val">${wb.irrCover}% of gap</span></div>
+        <div class="kv"><span class="k">Residual water gap</span><span class="val">${wb.residualMm} mm</span></div>
+        <div class="kv"><span class="k">Make-up irrigation</span><span class="val">${wb.gapM3ha.toLocaleString()} m3/ha</span></div>
+        <div class="kv"><span class="k">Total for plot</span><span class="val">${wb.totalM3.toLocaleString()} m3</span></div>
+      </div>
+    </div>` : "";
+
+  const rows = adv.length ? adv.map(a=>`<tr>
+      <td><span class="badge ${prioCls[a.prio]}">${a.prio}</span></td>
+      <td style="font-size:12px">${a.lens}</td>
+      <td><b>${esc(a.finding)}</b><br><span class="muted">${esc(a.action)}</span></td>
+      <td style="white-space:nowrap">${a.cost?P(a.cost):"&mdash;"}</td>
+      <td style="white-space:nowrap;color:var(--red);font-weight:600">${a.loss?P(a.loss):"&mdash;"}</td>
+    </tr>`).join("")
+    : `<tr><td colspan="5" style="padding:18px;color:var(--muted)">No priority actions. The farm is in good standing - maintain records, water discipline, and monitoring.</td></tr>`;
+
+  c.innerHTML="";
+  c.appendChild(el(`<div class="profile">
+    <div class="pf-head">
+      <div><h2>${esc(f.farmerName)}</h2>
+        <div class="sub">${f.id} &middot; ${esc(f.region)}${f.village?" &middot; "+esc(f.village):""} &middot; ${f.type==="crop"?esc(f.crop||"Arable"):esc(f.herdType||"Livestock")}</div>
+        <div class="sub">Generated ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})} &middot; Farmer Action Advisory</div>
+      </div>
+      <div class="pf-score"><div class="n">${highN}</div><div class="l">URGENT ACTIONS</div></div>
+    </div>
+    <div class="pf-body">
+      <div class="callout ${totLoss>0?'gold':''}">
+        <b>Bottom line:</b> ${adv.length} recommended action(s) at an estimated cost of <b>${P(totCost)}</b>, protecting an estimated <b>${P(totLoss)}</b> of value at risk this season. ${urgentMsg}
+      </div>
+      ${wbBox}
+      <div class="pf-sect"><h4>Prioritised action plan</h4>
+        <div class="tbl"><table>
+          <thead><tr><th>Priority</th><th>Lens</th><th>Finding and action</th><th>Est. cost</th><th>Value at risk</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+      </div>
+      <div class="legend"><span>${srcTag('e')} model-estimated</span><span>${srcTag('r')} farmer-stated</span></div>
+      <div class="disclaimer">
+        Botswana Agricultural Intelligence System &middot; Prototype advisory. Costs, water figures, and value-at-risk are model estimates from farmer-stated inputs using planning assumptions in Pula, not measured results.
+        Diagnose before you prescribe: confirm findings in the field before acting on high-cost recommendations.
+      </div>
+    </div>
+  </div>`));
+}
+
+/* ---------- insurer evidence pack ---------- */
+function openInsurer(id){ state.current=id; setView("insurer"); window.scrollTo(0,0); }
+function optList(list,cur){ return list.map(function(x){ return '<option'+(x===cur?' selected':'')+'>'+esc(x)+'</option>'; }).join(""); }
+function saveLossEvent(id){
+  const g=x=>{ const e=document.getElementById(x); return e?e.value:""; };
+  const ev={peril:g("le_peril"),date:g("le_date"),severity:g("le_severity"),areaAffectedPct:g("le_area"),conditionAtLoss:g("le_cond"),narrative:g("le_narr")};
+  if(!ev.peril||!ev.severity){ toast("Select a peril and severity"); return; }
+  const arr=load(); const f=arr.find(x=>x.id===id); if(!f) return;
+  f.lossEvent=ev; save(arr); toast("Loss event logged"); renderInsurer($("#content"),load());
+}
+function clearLossEvent(id){ const arr=load(); const f=arr.find(x=>x.id===id); if(f){ delete f.lossEvent; save(arr); } toast("Event cleared"); renderInsurer($("#content"),load()); }
+function lossForm(f){
+  const ev=f.lossEvent||{};
+  return el(`<div class="card" style="max-width:760px">
+    <h2 style="font-size:15px;color:var(--navy);margin:0 0 4px">Log loss event</h2>
+    <p class="muted" style="margin:0 0 16px;font-size:13px">Capture the claimed event for ${esc(f.farmerName)} (${f.id}). The evidence pack is generated from this plus the farm record.</p>
+    <div class="row">
+      <div class="fld"><label>Peril claimed</label><select id="le_peril"><option value="">Select...</option>${optList(PERILS,ev.peril)}</select></div>
+      <div class="fld"><label>Date of loss</label><input id="le_date" type="date" value="${esc(ev.date||"")}"></div>
+      <div class="fld"><label>Severity</label><select id="le_severity"><option value="">Select...</option>${optList(Object.keys(SEVERITY),ev.severity)}</select></div>
+      <div class="fld"><label>Area / herd affected (%)</label><input id="le_area" type="number" min="0" max="100" value="${esc(ev.areaAffectedPct||"")}"></div>
+      <div class="fld full"><label>Condition logged at loss ${srcTag('v')}</label><select id="le_cond"><option value="">Select...</option>${optList(Object.keys(CONDITION),ev.conditionAtLoss)}</select></div>
+      <div class="fld full"><label>Assessor narrative <span class="hint">what was observed</span></label><textarea id="le_narr" rows="2">${esc(ev.narrative||"")}</textarea></div>
+    </div>
+    <div class="formfoot"><button class="btn" onclick="saveLossEvent('${f.id}')">Generate evidence pack</button>
+      <button class="btn ghost" onclick="openProfile('${f.id}')">Cancel</button></div>
+  </div>`);
+}
+function renderInsurer(c,farms){
+  const f=farms.find(x=>x.id===state.current);
+  if(!f){ c.innerHTML=`<div class="empty">Farm not found.</div>`; return; }
+  $("#topactions").appendChild(el(`<button class="btn ghost sm" onclick="openProfile('${f.id}')">&larr; Profile</button>`));
+  const a=insurerAssessment(f);
+  c.innerHTML="";
+  if(!a){ c.appendChild(lossForm(f)); return; }
+  $("#topactions").appendChild(el(`<button class="btn sm" onclick="window.print()">&#9113; Print / PDF</button>`));
+  $("#topactions").appendChild(el(`<button class="btn gold sm noprint" onclick="clearLossEvent('${f.id}')">Edit event</button>`));
+  const ev=a.ev;
+  const flagsHtml = a.flags.length
+    ? a.flags.map(function(fl){ return '<tr><td style="white-space:nowrap"><b>'+esc(fl[0])+'</b></td><td>'+esc(fl[1])+'</td></tr>'; }).join("")
+    : '<tr><td colspan="2" style="color:var(--muted);padding:14px">No inconsistency or management flags. The claim aligns with the farm record.</td></tr>';
+  const calloutCls = a.rcls==="b-ok" ? "" : "gold";
+  const narrativeHtml = ev.narrative ? ('<div style="margin-top:10px;font-size:12.5px"><b>Assessor narrative:</b> '+esc(ev.narrative)+'</div>') : "";
+  c.appendChild(el(`<div class="profile">
+    <div class="pf-head">
+      <div><h2>${esc(f.farmerName)}</h2>
+        <div class="sub">${f.id} &middot; ${esc(f.region)}${f.village?" &middot; "+esc(f.village):""} &middot; ${f.type==="crop"?esc(f.crop||"Arable"):esc(f.herdType||"Livestock")}</div>
+        <div class="sub">Generated ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})} &middot; Insurer Evidence Pack</div>
+      </div>
+      <div class="pf-score"><div class="n" style="font-size:18px">${P(a.perilLoss)}</div><div class="l">PERIL-ATTRIBUTABLE</div></div>
+    </div>
+    <div class="pf-body">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+        <span class="badge ${a.vcls}" style="padding:5px 12px;font-size:13px">${a.verdict}</span>
+        <span class="badge ${a.rcls}" style="padding:5px 12px;font-size:13px">${a.rec}</span>
+        <span class="muted">Confidence: ${esc(a.confidence)}</span>
+      </div>
+      <div class="callout ${calloutCls}">
+        <b>Recommendation:</b> ${a.rec}. Of an assessed gross loss of ${P(a.grossLoss)}, an estimated <b>${P(a.perilLoss)}</b> is attributable to the peril and <b>${P(a.mgmtLoss)}</b> (${a.mgmtPct}%) to management or pre-existing factors.
+      </div>
+      <div class="pf-sect"><h4>Loss assessment ${srcTag('e')}</h4>
+        <div class="pf-kv">
+          <div class="kv"><span class="k">Expected season value</span><span class="val">${P(a.expected)}</span></div>
+          <div class="kv"><span class="k">Area / herd affected</span><span class="val">${a.areaPct}%</span></div>
+          <div class="kv"><span class="k">Severity</span><span class="val">${esc(ev.severity)}</span></div>
+          <div class="kv"><span class="k">Gross assessed loss</span><span class="val">${P(a.grossLoss)}</span></div>
+          <div class="kv"><span class="k">Management-attributable</span><span class="val" style="color:var(--red)">${a.mgmtPct}% &middot; ${P(a.mgmtLoss)}</span></div>
+          <div class="kv"><span class="k">Peril-attributable (payable)</span><span class="val" style="color:var(--green)">${P(a.perilLoss)}</span></div>
+        </div>
+      </div>
+      <div class="pf-sect"><h4>Event as claimed ${srcTag('r')}</h4>
+        <div class="pf-kv">
+          <div class="kv"><span class="k">Peril</span><span class="val">${esc(ev.peril)}</span></div>
+          <div class="kv"><span class="k">Date of loss</span><span class="val">${esc(ev.date||"Not stated")}</span></div>
+          <div class="kv"><span class="k">Condition at loss</span><span class="val">${esc(ev.conditionAtLoss||"Not assessed")}</span></div>
+          <div class="kv"><span class="k">Record completeness</span><span class="val">${a.comp}%</span></div>
+        </div>
+        ${narrativeHtml}
+      </div>
+      <div class="pf-sect"><h4>Evidence flags - management &amp; consistency</h4>
+        <div class="tbl"><table><thead><tr><th style="width:150px">Area</th><th>Finding</th></tr></thead><tbody>${flagsHtml}</tbody></table></div>
+      </div>
+      <div class="legend"><span>${srcTag('v')} confirmed</span><span>${srcTag('r')} farmer-stated</span><span>${srcTag('e')} model-estimated</span></div>
+      <div class="disclaimer">
+        Botswana Agricultural Intelligence System &middot; Independent evidence pack. Loss figures are model estimates from the farm record and the logged event, using planning-assumption values in Pula, not measured results.
+        Satellite and drone verification are not connected in this prototype; for high-value claims, commission a drone inspection before settlement. Distinguish drought, flood, pest, disease, mismanagement, and fraud on evidence. This pack supports an underwriting decision and is not itself a claim approval.
+      </div>
+    </div>
+  </div>`));
+}
+
+/* ---------- processor supply forecast ---------- */
+const CROP_MATURITY={"Sorghum":120,"Maize":130,"Millet":100,"Cowpeas":75,"Sugar beans":90,"Groundnuts":130,"Sunflower":110,"Vegetables":70};
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function processorForecast(farms){
+  const crops={};
+  farms.filter(f=>f.type==="crop"&&CROPS[f.crop]).forEach(f=>{
+    const y=estYield(f); const r=riskScore(f).score;
+    const c=crops[f.crop]||(crops[f.crop]={crop:f.crop,farms:0,ha:0,tonnes:0,value:0,scoreSum:0,buyers:0,months:[]});
+    c.farms++; c.ha+=num(f.plotSize); c.tonnes+=y?y.tonnes:0; c.value+=y?y.revenue:0; c.scoreSum+=r; if(f.buyer)c.buyers++;
+    if(f.plantingDate){ const d=new Date(f.plantingDate); if(!isNaN(d)){ const h=new Date(d.getTime()+ (CROP_MATURITY[f.crop]||120)*86400000); c.months.push(h.getMonth()); } }
+  });
+  return Object.values(crops).map(c=>{
+    c.avgScore=Math.round(c.scoreSum/c.farms);
+    c.reliab = c.avgScore>=70?"High":(c.avgScore>=50?"Medium":"Low");
+    c.reliabCls = c.avgScore>=70?"b-ok":(c.avgScore>=50?"b-amber":"b-red");
+    c.committed=Math.round(100*c.buyers/c.farms);
+    if(c.months.length){ const mn=Math.min.apply(null,c.months),mx=Math.max.apply(null,c.months); c.window = mn===mx?MONTHS[mn]:MONTHS[mn]+" - "+MONTHS[mx]; } else c.window="TBD";
+    c.tonnes=Math.round(c.tonnes*10)/10;
+    return c;
+  }).sort((a,b)=>b.tonnes-a.tonnes);
+}
+function renderProcessor(c,farms){
+  c.innerHTML="";
+  const rows=processorForecast(farms);
+  if(!rows.length){ c.appendChild(el(`<div class="empty"><p class="muted">No crop farms registered yet. The processor forecast clusters crop records into committed supply.</p><button class="btn" onclick="setView('register')">Register a crop farm</button> <button class="btn ghost" onclick="loadSamples()">Load sample data</button></div>`)); return; }
+  const totT=Math.round(rows.reduce((a,r)=>a+r.tonnes,0));
+  const totV=rows.reduce((a,r)=>a+r.value,0);
+  const totF=rows.reduce((a,r)=>a+r.farms,0);
+  const wBuyer=rows.reduce((a,r)=>a+r.buyers,0);
+  const commitPct=Math.round(100*wBuyer/totF);
+  c.appendChild(el(`<div class="grid kpis">
+    <div class="card kpi"><div class="lab">Forecast supply</div><div class="val">${totT.toLocaleString()}<span style="font-size:14px;color:var(--muted)"> t</span></div><div class="note">${rows.length} crop(s), ${totF} farms</div></div>
+    <div class="card kpi"><div class="lab">Forecast value</div><div class="val" style="font-size:22px">${P(totV)}</div><div class="note">Estimated farmgate</div></div>
+    <div class="card kpi"><div class="lab">Committed to a buyer</div><div class="val">${commitPct}<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">${wBuyer} of ${totF} farms</div></div>
+    <div class="card kpi"><div class="lab">Crops tracked</div><div class="val">${rows.length}</div><div class="note">Clustered supply lines</div></div>
+  </div>`));
+  const trs=rows.map(function(r){
+    return '<tr><td><b>'+esc(r.crop)+'</b></td><td>'+r.farms+'</td><td>'+Math.round(r.ha)+' ha</td><td><b>'+r.tonnes.toLocaleString()+' t</b></td><td>'+esc(r.window)+'</td><td><span class="badge '+r.reliabCls+'">'+r.reliab+'</span></td><td>'+r.committed+'%</td><td>'+P(r.value)+'</td></tr>';
+  }).join("");
+  c.appendChild(el(`<div class="secthead"><h2>Supply by crop - forecast volume and harvest window</h2></div>`));
+  c.appendChild(el(`<div class="tbl"><table><thead><tr><th>Crop</th><th>Farms</th><th>Area</th><th>Forecast volume</th><th>Harvest window</th><th>Reliability</th><th>Committed</th><th>Value</th></tr></thead><tbody>${trs}</tbody></table></div>`));
+  c.appendChild(el(`<div class="callout">Processors want reliable supply, not random supply. Reliability reflects the average farm risk score behind each crop; "committed" is the share of farms with a confirmed buyer. Convert TBD harvest windows by capturing planting dates, and lift reliability by moving low-score farms up through advisories.</div>`));
+  c.appendChild(el(`<div class="disclaimer">Botswana Agricultural Intelligence System &middot; Forecast volumes and values are model estimates from farmer-stated inputs using planning-assumption yields in Pula, not contracted tonnage. Confirm against signed offtake before committing processing capacity.</div>`));
+}
+
+/* ---------- government district dashboard ---------- */
+const CEREAL_DEMAND_T=300000;   // derived reference: 117,228 t was ~39% of demand
+function govByDistrict(farms){
+  const d={};
+  farms.forEach(f=>{
+    const k=f.region||"-"; const r=riskScore(f).score;
+    const g=d[k]||(d[k]={region:k,farms:0,ha:0,animals:0,scoreSum:0,bankable:0,complete:0,buyers:0,droughtHigh:0,cropTonnes:0,cattle:0});
+    g.farms++; g.scoreSum+=r;
+    if(r>=72)g.bankable++;
+    if(completeness(f)>=60)g.complete++;
+    if(f.buyer)g.buyers++;
+    if(f.droughtExposure==="High")g.droughtHigh++;
+    if(f.type==="crop"){ g.ha+=num(f.plotSize); const y=estYield(f); g.cropTonnes+=y?y.tonnes:0; }
+    else { g.animals+=num(f.herdSize); if(f.herdType==="Cattle (beef)")g.cattle+=num(f.herdSize); }
+  });
+  return Object.values(d).map(g=>{ g.avgScore=Math.round(g.scoreSum/g.farms); g.monitored=Math.round(100*g.complete/g.farms); g.cropTonnes=Math.round(g.cropTonnes); return g; }).sort((a,b)=>b.farms-a.farms);
+}
+function renderGovernment(c,farms){
+  c.innerHTML="";
+  if(!farms.length){ c.appendChild(el(`<div class="empty"><p class="muted">No farms registered yet. The government view measures coverage, monitoring, and outcomes by district.</p><button class="btn" onclick="setView('register')">Register a farm</button> <button class="btn ghost" onclick="loadSamples()">Load sample data</button></div>`)); return; }
+  const rows=govByDistrict(farms);
+  const totF=farms.length;
+  const monitored=Math.round(100*farms.filter(f=>completeness(f)>=60).length/totF);
+  const bankablePct=Math.round(100*farms.filter(f=>riskScore(f).score>=72).length/totF);
+  const cereal=Math.round(farms.filter(f=>f.type==="crop"&&["Sorghum","Maize","Millet"].indexOf(f.crop)>-1).reduce((a,f)=>{const y=estYield(f);return a+(y?y.tonnes:0);},0));
+  const cattle=farms.filter(f=>f.herdType==="Cattle (beef)").reduce((a,f)=>a+num(f.herdSize),0);
+  const cerealPct=(100*cereal/CEREAL_DEMAND_T).toFixed(2);
+  c.appendChild(el(`<div class="grid kpis">
+    <div class="card kpi"><div class="lab">Districts covered</div><div class="val">${rows.length}</div><div class="note">${totF} farms total</div></div>
+    <div class="card kpi"><div class="lab">Monitored records</div><div class="val">${monitored}<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">Record completeness 60%+</div></div>
+    <div class="card kpi"><div class="lab">Bankable farms</div><div class="val">${bankablePct}<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">Tier A, finance-ready</div></div>
+    <div class="card kpi"><div class="lab">Cereal contribution</div><div class="val">${cerealPct}<span style="font-size:14px;color:var(--muted)">%</span></div><div class="note">${cereal.toLocaleString()} t of ~${(CEREAL_DEMAND_T/1000)}k t demand</div></div>
+  </div>`));
+  const trs=rows.map(function(g){
+    return '<tr><td><b>'+esc(g.region)+'</b></td><td>'+g.farms+'</td><td>'+Math.round(g.ha)+' ha</td><td>'+g.animals.toLocaleString()+'</td><td><span class="badge '+(g.avgScore>=72?"b-ok":(g.avgScore>=50?"b-amber":"b-red"))+'">'+g.avgScore+'</span></td><td>'+g.monitored+'%</td><td>'+Math.round(100*g.bankable/g.farms)+'%</td><td>'+Math.round(100*g.droughtHigh/g.farms)+'%</td><td>'+g.cropTonnes.toLocaleString()+' t</td></tr>';
+  }).join("");
+  c.appendChild(el(`<div class="secthead"><h2>District measurement table</h2></div>`));
+  c.appendChild(el(`<div class="tbl"><table><thead><tr><th>District</th><th>Farms</th><th>Cropland</th><th>Animals</th><th>Avg risk</th><th>Monitored</th><th>Bankable</th><th>Drought-high</th><th>Forecast cereal</th></tr></thead><tbody>${trs}</tbody></table></div>`));
+  c.appendChild(el(`<div class="secthead"><h2>National mandates</h2></div>`));
+  c.appendChild(el(`<div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><h2 style="font-size:13px;color:var(--navy);margin:0 0 6px">Cereal self-sufficiency</h2><p style="font-size:13px;margin:0;line-height:1.6">Registered farms forecast <b>${cereal.toLocaleString()} t</b> of cereal, about <b>${cerealPct}%</b> of an estimated ${(CEREAL_DEMAND_T/1000)}k t national demand. Every reliable local tonne displaces an import.</p></div>
+    <div class="card"><h2 style="font-size:13px;color:var(--navy);margin:0 0 6px">5m cattle directive</h2><p style="font-size:13px;margin:0;line-height:1.6">Registered beef herds total <b>${cattle.toLocaleString()} head</b>, traced and monitored. A counted, health-checked herd is what turns the directive from a target into a measurable programme.</p></div>
+  </div>`));
+  c.appendChild(el(`<div class="callout gold">Move from funding agriculture blindly to measuring it intelligently. ${100-monitored}% of registered farms still have thin records - the subsidy-leakage and impact-blind-spot zone. Closing that gap is the fastest win for ISPAAD and LIMID monitoring.</div>`));
+  c.appendChild(el(`<div class="disclaimer">Botswana Agricultural Intelligence System &middot; Figures are aggregated from registered farms only and use planning-assumption yields; the national demand reference is derived from public reporting (117,228 t at ~39% of demand). This is a coverage and monitoring view, not official statistics.</div>`));
+}
+
+/* ---------- drone inspection / verification ---------- */
+function openInspection(id){ state.current=id; setView("inspection"); window.scrollTo(0,0); }
+function saveInspection(id){
+  const g=x=>{ const e=document.getElementById(x); return e?e.value:""; };
+  const ins={date:g("di_date"),operator:g("di_op"),areaHa:g("di_area"),condition:g("di_cond"),affectedPct:g("di_affect"),vigor:g("di_vigor"),findings:g("di_find")};
+  if(!ins.condition){ toast("Select the verified condition"); return; }
+  const arr=load(); const f=arr.find(x=>x.id===id); if(!f) return;
+  f.inspection=ins; save(arr); toast("Inspection recorded - record upgraded to verified"); renderInspection($("#content"),load());
+}
+function clearInspection(id){ const arr=load(); const f=arr.find(x=>x.id===id); if(f){ delete f.inspection; save(arr); } toast("Inspection cleared"); renderInspection($("#content"),load()); }
+function inspectionForm(f){
+  const ins=f.inspection||{};
+  return el(`<div class="card" style="max-width:760px">
+    <h2 style="font-size:15px;color:var(--navy);margin:0 0 4px">Record drone inspection</h2>
+    <p class="muted" style="margin:0 0 16px;font-size:13px">Log a field inspection for ${esc(f.farmerName)} (${f.id}). This upgrades the farm condition from reported to verified, lifting the risk-score confidence and the insurer assessment.</p>
+    <div class="row">
+      <div class="fld"><label>Inspection date</label><input id="di_date" type="date" value="${esc(ins.date||"")}"></div>
+      <div class="fld"><label>Operator / pilot</label><input id="di_op" value="${esc(ins.operator||"")}"></div>
+      <div class="fld"><label>Area covered (ha)</label><input id="di_area" type="number" step="0.1" min="0" value="${esc(ins.areaHa||"")}"></div>
+      <div class="fld"><label>Verified condition ${srcTag('v')}</label><select id="di_cond"><option value="">Select...</option>${optList(Object.keys(CONDITION),ins.condition)}</select></div>
+      <div class="fld"><label>Stress / damage affected (%)</label><input id="di_affect" type="number" min="0" max="100" value="${esc(ins.affectedPct||"")}"></div>
+      <div class="fld"><label>Vigour index (0-100) <span class="hint">NDVI proxy</span></label><input id="di_vigor" type="number" min="0" max="100" value="${esc(ins.vigor||"")}"></div>
+      <div class="fld full"><label>Findings</label><textarea id="di_find" rows="2">${esc(ins.findings||"")}</textarea></div>
+    </div>
+    <div class="formfoot"><button class="btn" onclick="saveInspection('${f.id}')">Record &amp; verify</button>
+      <button class="btn ghost" onclick="openProfile('${f.id}')">Cancel</button></div>
+  </div>`);
+}
+function renderInspection(c,farms){
+  const f=farms.find(x=>x.id===state.current);
+  if(!f){ c.innerHTML=`<div class="empty">Farm not found.</div>`; return; }
+  $("#topactions").appendChild(el(`<button class="btn ghost sm" onclick="openProfile('${f.id}')">&larr; Profile</button>`));
+  const ins=f.inspection;
+  c.innerHTML="";
+  if(!ins||!ins.condition){ c.appendChild(inspectionForm(f)); return; }
+  $("#topactions").appendChild(el(`<button class="btn sm" onclick="window.print()">&#9113; Print / PDF</button>`));
+  $("#topactions").appendChild(el(`<button class="btn gold sm noprint" onclick="clearInspection('${f.id}')">Edit inspection</button>`));
+  const vigor=ins.vigor!==""&&ins.vigor!=null?num(ins.vigor):null;
+  const vcls=vigor==null?"b-grey":(vigor>=70?"b-ok":(vigor>=45?"b-amber":"b-red"));
+  const findingsHtml = ins.findings ? ('<div style="margin-top:10px;font-size:12.5px"><b>Findings:</b> '+esc(ins.findings)+'</div>') : "";
+  const vigorBox = vigor==null ? '<span class="muted">n/a</span>' : ('<span class="badge '+vcls+'" style="padding:4px 10px">'+vigor+' / 100</span>');
+  c.appendChild(el(`<div class="profile">
+    <div class="pf-head">
+      <div><h2>${esc(f.farmerName)}</h2>
+        <div class="sub">${f.id} &middot; ${esc(f.region)}${f.village?" &middot; "+esc(f.village):""} &middot; ${f.type==="crop"?esc(f.crop||"Arable"):esc(f.herdType||"Livestock")}</div>
+        <div class="sub">Generated ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})} &middot; Drone Inspection Report</div>
+      </div>
+      <div class="pf-score"><div class="n" style="font-size:22px">${vigor==null?"&mdash;":vigor}</div><div class="l">VIGOUR INDEX</div></div>
+    </div>
+    <div class="pf-body">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+        <span class="badge b-ok" style="padding:5px 12px;font-size:13px">FIELD-VERIFIED ${srcTag('v')}</span>
+        <span class="muted">Never fly without a decision attached - this report is the artifact a bank, insurer, or processor can trust.</span>
+      </div>
+      <div class="pf-sect"><h4>Inspection record ${srcTag('v')}</h4>
+        <div class="pf-kv">
+          <div class="kv"><span class="k">Inspection date</span><span class="val">${esc(ins.date||"Not stated")}</span></div>
+          <div class="kv"><span class="k">Operator / pilot</span><span class="val">${esc(ins.operator||"Not stated")}</span></div>
+          <div class="kv"><span class="k">Area covered</span><span class="val">${ins.areaHa?esc(ins.areaHa)+" ha":"Not stated"}</span></div>
+          <div class="kv"><span class="k">Verified condition</span><span class="val">${esc(ins.condition)}</span></div>
+          <div class="kv"><span class="k">Stress / damage affected</span><span class="val">${ins.affectedPct?esc(ins.affectedPct)+"%":"Not stated"}</span></div>
+          <div class="kv"><span class="k">Vigour index</span><span class="val">${vigorBox}</span></div>
+        </div>
+        ${findingsHtml}
+      </div>
+      <div class="callout">
+        <b>What this upgrades:</b> the farm condition is now field-verified, not farmer-stated. The risk score uses the verified condition, the bankable profile gains evidence weight, and any insurer evidence pack moves to <b>drone-verified confidence</b> - removing the field-verify hold before payout.
+      </div>
+      <div class="legend"><span>${srcTag('v')} measured / confirmed</span></div>
+      <div class="disclaimer">
+        Botswana Agricultural Intelligence System &middot; Inspection record. This prototype stores the assessor's verified findings; it does not itself process drone imagery. In production, attach the orthomosaic and NDVI layer and auto-populate the vigour index. The report supports finance, insurance, and supply decisions.
+      </div>
+    </div>
+  </div>`));
+}
+
+/* ---------- data / backup ---------- */
+function renderData(c,farms){
+  c.innerHTML="";
+  c.appendChild(el(`<div class="callout navy"><b>The data is the asset.</b> Everything here lives only in this browser on this computer. Export regularly to back it up, move it to another machine, or hand a dataset to an analyst. The system gets smarter the more records it holds.</div>`));
+  c.appendChild(el(`<div class="card"><h2 style="font-size:14px;color:var(--navy);margin:0 0 6px">Export</h2>
+    <p class="muted" style="margin:0 0 14px;font-size:13px">${farms.length} farm record(s) currently stored.</p>
+    <div class="toolbar">
+      <button class="btn" onclick="exportJSON()">&#10515; Export JSON (full backup)</button>
+      <button class="btn alt" onclick="exportCSV()">&#10515; Export CSV (spreadsheet)</button>
+    </div></div>`));
+  c.appendChild(el(`<div class="card" style="margin-top:16px"><h2 style="font-size:14px;color:var(--navy);margin:0 0 6px">Import / restore</h2>
+    <p class="muted" style="margin:0 0 14px;font-size:13px">Load a JSON backup. This merges into existing records (matching IDs are updated).</p>
+    <input type="file" id="imp" accept="application/json" class="noprint" style="max-width:320px">
+    </div>`));
+  c.appendChild(el(`<div class="card" style="margin-top:16px"><h2 style="font-size:14px;color:var(--navy);margin:0 0 6px">Sample &amp; reset</h2>
+    <div class="toolbar">
+      <button class="btn ghost" onclick="loadSamples()">Load sample data</button>
+      <button class="btn danger" onclick="wipe()">Delete all records</button>
+    </div></div>`));
+  setTimeout(()=>{ const i=$("#imp"); if(i) i.onchange=importJSON; },0);
+}
+function exportJSON(){ download("botswana-farms-backup.json", JSON.stringify(load(),null,2), "application/json"); toast("JSON exported"); }
+function exportCSV(){
+  const farms=load(); if(!farms.length){toast("No data to export");return;}
+  const cols=["id","type","farmerName","nationalId","contact","region","village","plotSize","tenure","gps","waterSource","pumpStatus","crop","variety","plantingDate","irrigation","droughtExposure","condition","inputsLogged","herdType","herdSize","healthProgram","brandReg","buyer","priorLoan","notes","created"];
+  const extra=["riskScore","bankTier","estYield_tonnes","forecastRevenue","indicativeLoan"];
+  const head=cols.concat(extra).join(",");
+  const rows=farms.map(f=>{ const r=riskScore(f),rp=repayment(f),y=estYield(f);
+    const base=cols.map(k=>csv(f[k]));
+    const add=[r.score,bankTier(r.score).tier,(y?y.tonnes:""),rp.expectedRevenue,rp.indicativeLoan].map(csv);
+    return base.concat(add).join(","); });
+  download("botswana-farms.csv",[head].concat(rows).join("\n"),"text/csv"); toast("CSV exported");
+}
+function csv(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function download(name,data,mime){ const b=new Blob([data],{type:mime}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download=name; a.click(); URL.revokeObjectURL(u); }
+function importJSON(e){ const file=e.target.files[0]; if(!file)return; const rd=new FileReader();
+  rd.onload=()=>{ try{ const incoming=JSON.parse(rd.result); if(!Array.isArray(incoming))throw 0;
+    const cur=load(); const byId={}; cur.forEach(f=>byId[f.id]=f); incoming.forEach(f=>{ if(!f.id)f.id=uid(); byId[f.id]=Object.assign(byId[f.id]||{},f); });
+    save(Object.values(byId)); toast("Imported "+incoming.length+" record(s)"); render();
+  }catch(err){ toast("Invalid JSON file"); } };
+  rd.readAsText(file);
+}
+function wipe(){ if(confirm("Delete ALL farm records on this computer? Export a backup first. This cannot be undone.")){ localStorage.removeItem(STORE_KEY); toast("All records deleted"); setView("dashboard"); } }
+
+/* ---------- about ---------- */
+function renderAbout(c){
+  c.innerHTML=`
+  <div class="card" style="max-width:820px">
+    <h2 style="color:var(--navy);margin:0 0 6px">What this system does</h2>
+    <p style="font-size:13.5px;line-height:1.6">This is the Phase 0 working core of the Botswana Agricultural Intelligence System: it <b>captures one structured record per farm</b>, scores it, and generates two outputs from that single record: a <b>lender-ready bankable farmer profile</b> and a <b>farmer action advisory</b> (a prioritised, costed plan with a water budget). It runs entirely on your computer and stores data in this browser. One intake feeds every output - the same record drives the risk score, the production forecast, the finance view, and the advisory. Capture once, serve many.</p>
+
+    <h3 style="color:var(--green);font-size:13px;text-transform:uppercase;letter-spacing:.6px;margin:20px 0 8px">The risk score (0-100)</h3>
+    <p style="font-size:13.5px;line-height:1.6">A transparent weighted model, not a black box. Crop farms are scored on water security, irrigation capacity, drought resilience, crop condition, record completeness, a confirmed buyer, and repayment history. Livestock farms swap in herd health and traceability. Every point is shown on the profile so a lender can see exactly why a farm scored what it did.</p>
+
+    <h3 style="color:var(--green);font-size:13px;text-transform:uppercase;letter-spacing:.6px;margin:20px 0 8px">Evidence labelling</h3>
+    <p style="font-size:13.5px;line-height:1.6">Each fact carries its basis: ${srcTag('v')} measured or confirmed, ${srcTag('r')} farmer-stated and unconfirmed, ${srcTag('e')} model-estimated. A guess is never shown as a verified record - the core discipline of the whole system.</p>
+
+    <h3 style="color:var(--green);font-size:13px;text-transform:uppercase;letter-spacing:.6px;margin:20px 0 8px">Honest limits of this prototype</h3>
+    <ul style="font-size:13.5px;line-height:1.7">
+      <li>Yields and prices are <b>planning assumptions in Pula</b>, not verified market data. Replace them with real BAMB / BMC figures before any lending use.</li>
+      <li>Satellite and drone layers are <b>not connected</b> here. Crop condition is captured by field observation instead.</li>
+      <li>The indicative loan figure is illustrative (~50% of forecast revenue), not a credit decision.</li>
+    </ul>
+
+    <h3 style="color:var(--green);font-size:13px;text-transform:uppercase;letter-spacing:.6px;margin:20px 0 8px">What comes next (Phase 1)</h3>
+    <p style="font-size:13.5px;line-height:1.6">Connect a satellite condition feed, add drone inspection on demand, calibrate the yield model on one season of real harvest data, and put these profiles in front of one lender (CEDA or NDB) to capture what they will pay. See the master blueprint for the full roadmap.</p>
+  </div>`;
+}
+
+/* ---------- sample data ---------- */
+function loadSamples(){
+  const s=[
+    {type:"crop",farmerName:"Kefilwe Moeng",region:"Chobe (Pandamatenga)",village:"Pandamatenga",plotSize:"12",tenure:"Leasehold",waterSource:"Irrigation scheme",pumpStatus:"Working",crop:"Maize",irrigation:"Centre pivot",droughtExposure:"Low",condition:"Healthy / vigorous",inputsLogged:"Hybrid seed, basal + top fertiliser, herbicide",buyer:"BAMB",priorLoan:"repaid",contact:"71xxxxxx",gps:"-18.52, 25.65"},
+    {type:"crop",farmerName:"Tebogo Seretse",region:"Southern (Barolong)",village:"Goodhope",plotSize:"6",tenure:"Tribal / customary",waterSource:"Rain-fed",pumpStatus:"None",crop:"Sorghum",irrigation:"None (dryland)",droughtExposure:"High",condition:"Moderate stress",inputsLogged:"Retained seed, no fertiliser",buyer:"",priorLoan:"none",contact:"72xxxxxx"},
+    {type:"livestock",farmerName:"Onkemetse Tau",region:"Central",village:"Serowe",herdType:"Cattle (beef)",herdSize:"240",droughtExposure:"Medium",healthProgram:"true",brandReg:"true",waterSource:"Borehole",pumpStatus:"Working",buyer:"Botswana Meat Commission",priorLoan:"active",tenure:"Communal grazing",contact:"73xxxxxx"},
+    {type:"crop",farmerName:"Lorato Dube",region:"North West (Ngamiland)",village:"Shakawe",plotSize:"3",tenure:"Tribal / customary",waterSource:"River / surface",pumpStatus:"Intermittent",crop:"Vegetables",irrigation:"Drip",droughtExposure:"Medium",condition:"Mild stress",inputsLogged:"Seedlings, compost",buyer:"Local processor",priorLoan:"none",contact:"74xxxxxx"},
+    {type:"livestock",farmerName:"Mpho Kgosi",region:"Kgalagadi",village:"Tsabong",herdType:"Goats",herdSize:"85",droughtExposure:"High",healthProgram:"false",brandReg:"false",waterSource:"Borehole",pumpStatus:"Broken",buyer:"",priorLoan:"default",tenure:"Communal grazing",contact:"75xxxxxx"}
+  ];
+  const arr=load();
+  s.forEach(x=>{ x.id=uid(); x.created=new Date().toISOString(); arr.push(x); });
+  save(arr); toast("Loaded "+s.length+" sample farms"); setView("dashboard");
+}
+
+/* ---------- boot ---------- */
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>setView(b.dataset.view));
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "botswana-agricultural-intelligence-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Botswana Agricultural Intelligence System - offline-capable field data platform (static host).",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
